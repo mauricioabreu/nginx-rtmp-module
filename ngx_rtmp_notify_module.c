@@ -820,6 +820,8 @@ ngx_rtmp_notify_parse_http_retcode(ngx_rtmp_session_t *s,
                         return NGX_OK;
                     case (u_char) '3':
                         return NGX_AGAIN;
+                    case (u_char) '4':
+                        return NGX_DECLINED;
                     default:
                         return NGX_ERROR;
                 }
@@ -965,7 +967,7 @@ ngx_rtmp_notify_connect_handle(ngx_rtmp_session_t *s,
     static ngx_str_t    location = ngx_string("location");
 
     rc = ngx_rtmp_notify_parse_http_retcode(s, in);
-    if (rc == NGX_ERROR) {
+    if (rc == NGX_ERROR || rc == NGX_DECLINED) {
         return NGX_ERROR;
     }
 
@@ -1017,7 +1019,7 @@ ngx_rtmp_notify_publish_handle(ngx_rtmp_session_t *s,
     static ngx_str_t    location = ngx_string("location");
 
     rc = ngx_rtmp_notify_parse_http_retcode(s, in);
-    if (rc == NGX_ERROR) {
+    if (rc == NGX_ERROR || rc == NGX_DECLINED) {
         ngx_rtmp_notify_clear_flag(s, NGX_RTMP_NOTIFY_PUBLISHING);
         return NGX_ERROR;
     }
@@ -1096,7 +1098,7 @@ ngx_rtmp_notify_play_handle(ngx_rtmp_session_t *s,
     static ngx_str_t            location = ngx_string("location");
 
     rc = ngx_rtmp_notify_parse_http_retcode(s, in);
-    if (rc == NGX_ERROR) {
+    if (rc == NGX_ERROR || rc == NGX_DECLINED) {
         ngx_rtmp_notify_clear_flag(s, NGX_RTMP_NOTIFY_PLAYING);
         return NGX_ERROR;
     }
@@ -1172,7 +1174,7 @@ ngx_rtmp_notify_update_handle(ngx_rtmp_session_t *s,
 
     rc = ngx_rtmp_notify_parse_http_retcode(s, in);
 
-    if ((!nacf->update_strict && rc == NGX_ERROR) ||
+    if ((!nacf->update_strict && rc == NGX_DECLINED) ||
          (nacf->update_strict && rc != NGX_OK))
     {
         ngx_log_error(NGX_LOG_INFO, s->connection->log, 0,

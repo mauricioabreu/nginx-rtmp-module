@@ -1356,9 +1356,9 @@ ngx_rtmp_relay_close(ngx_rtmp_session_t *s)
 
         /* push reconnect */
         if (s->relay && ctx->tag == &ngx_rtmp_relay_module &&
-            !ctx->publish->push_evt.timer_set)
+            !ctx->push_evt.timer_set)
         {
-            ngx_add_timer(&ctx->publish->push_evt, racf->push_reconnect);
+            ngx_add_timer(&ctx->push_evt, racf->push_reconnect);
         }
 
 #ifdef NGX_DEBUG
